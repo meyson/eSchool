@@ -41,7 +41,7 @@ jobs:
       - run:
           name: Deploy Over SSH
           command: |
-            ssh $SSH_USER@$SSH_HOST "echo 'HI!!!' > ~/hi.txt"
+            ssh $SSH_USER@$SSH_HOST "python3 deploy.py -j $CIRCLE_BUILD_NUM"
 
 workflows:
   version: 2
