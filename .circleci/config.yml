@@ -33,6 +33,9 @@ jobs:
       - store_artifacts: # store the uberjar as an artifact
           path: target/eschool.jar
   deploy:
+    docker:
+      - image: cimg/base:2020.01
+    resource_class: small
     steps:
       - add_ssh_keys:
           fingerprints:
