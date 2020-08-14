@@ -32,11 +32,6 @@ jobs:
 
       - store_artifacts: # store the uberjar as an artifact
           path: target/eschool.jar
-
-      - run:
-          name: Save build job id
-          command: |
-            export BUILD_JOB_ID=CIRCLE_BUILD_NUM
   deploy:
     docker:
       - image: cimg/base:2020.01
@@ -48,7 +43,7 @@ jobs:
       - run:
           name: Deploy Over SSH
           command: |
-            ssh $SSH_USER@$SSH_HOST "python3 ./deploy.py -j $BUILD_JOB_ID"
+            ssh $SSH_USER@$SSH_HOST "python3 ./deploy.py -j $CIRCLE_PREVIOUS_BUILD_NUM"
 
 workflows:
   version: 2
