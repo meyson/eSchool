@@ -33,13 +33,13 @@ jobs:
       - store_artifacts: # store the uberjar as an artifact
           path: target/eschool.jar
   deploy:
-    docker:
-      - image: cimg/base:2020.01
-    resource_class: small
     steps:
       - add_ssh_keys:
           fingerprints:
             - "b7:fd:ae:26:61:c9:e4:b6:36:6f:41:74:6a:f9:86:3c"
+      - run:
+          name: fix host authenticity for production server
+          command: ssh-keyscan $SSH_HOST >> ~/.ssh/known_hosts
       - run:
           name: Deploy Over SSH
           command: |
