@@ -43,7 +43,8 @@ jobs:
       - run:
           name: Deploy Over SSH
           command: |
-            ssh $SSH_USER@$SSH_HOST "nohup python3 ./deploy.py -j $CIRCLE_BUILD_NUM &; exit 0"
+            ssh -f $SSH_USER@$SSH_HOST "python3 ./deploy.py -j $CIRCLE_BUILD_NUM"
+            exit 0
 
 workflows:
   version: 2
