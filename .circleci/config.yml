@@ -34,7 +34,7 @@ jobs:
           path: target/eschool.jar
   deploy:
     docker:
-      enabled: true
+      - image: cimg/base:2020.01
     resource_class: small
     steps:
       - add_ssh_keys:
