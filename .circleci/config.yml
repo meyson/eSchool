@@ -46,7 +46,7 @@ jobs:
       - run:
           name: Deploy Over SSH
           command: |
-            ssh $SSH_USER@$SSH_HOST "python3 ./deploy.py -j $CIRCLE_PREVIOUS_BUILD_NUM"
+            ssh $SSH_USER@$SSH_HOST "python3 deploy_eschool/deploy.py --job $CIRCLE_PREVIOUS_BUILD_NUM --project be"
 
 workflows:
   version: 2
