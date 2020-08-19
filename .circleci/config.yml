@@ -3,27 +3,25 @@ version: 2
 jobs:
   build:
     working_directory: ~/circleci-demo-java-spring
-
-    docker: # run the steps with Docker
+    # run the steps with Docker
+    docker:
       - image: circleci/openjdk:8-jdk-stretch
-
     resource_class: small
 
     steps:
-
-      - checkout # check out source code to working directory
-
-      - restore_cache: # restore the saved cache after the first run or if `pom.xml` has changed
+      # check out source code to working directory
+      - checkout
+      # restore the saved cache after the first run or if `pom.xml` has changed
+      - restore_cache:
           key: eschool-{{ checksum "pom.xml" }}
-
-      - run: mvn dependency:go-offline # gets the project dependencies
-
-      - save_cache: # saves the project dependencies
+      # gets the project dependencies
+      - run: mvn dependency:go-offline
+      # saves the project dependencies
+      - save_cache:
           paths:
             - ~/.m2
           key: eschool-{{ checksum "pom.xml" }}
-
-      # run the actual tests
+      # run unit tests
       - run: mvn package -Dtest=\!ScheduleControllerIntegrationTest*
 
       - store_test_results:
@@ -33,6 +31,7 @@ jobs:
       - store_artifacts: # store the uberjar as an artifact
           path: target/eschool.jar
   deploy:
+    # Use simple container for deployment
     docker:
       - image: cimg/base:2020.01
     resource_class: small
@@ -40,13 +39,15 @@ jobs:
       - add_ssh_keys:
           fingerprints:
             - "b7:fd:ae:26:61:c9:e4:b6:36:6f:41:74:6a:f9:86:3c"
+      # Add our server to known_hosts
       - run:
-          name: fix host authenticity for production server
+          name: fix host authenticity for deploy server
           command: ssh-keyscan $SSH_HOST >> ~/.ssh/known_hosts
       - run:
           name: Deploy Over SSH
-          command: |
-            ssh $SSH_USER@$SSH_HOST "python3 deploy_eschool/deploy.py --job $CIRCLE_PREVIOUS_BUILD_NUM --project be"
+          command: >
+            ssh $SSH_USER@$SSH_HOST "python3 deploy_eschool/deploy.py --job $CIRCLE_PREVIOUS_BUILD_NUM
+            --project be --credentials deploy_eschool/credentials_eschool_prod.yaml"
 
 workflows:
   version: 2
@@ -54,8 +55,10 @@ workflows:
     jobs:
       - build
       - deploy:
+          # only deploy once build job has completed
           requires:
-            - build # only deploy once build job has completed
+            - build
           filters:
+            # Only deploy on the master branch
             branches:
-              only: master # Only deploy on the master branch
+              only: master
